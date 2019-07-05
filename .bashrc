@@ -9,7 +9,8 @@ fi
 # export SYSTEMD_PAGER=
 
 # use the `dotfile` alias for managing config
-[[ -f $HOME/.dotfile.bash ]] && . $HOME/.dotfile.bash
+alias dotfile='/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
+dotfile config status.showUntrackedFiles no
 
 # User specific aliases and functions
 set -o vi
