@@ -12,4 +12,4 @@
 # like you would with git, so instead of "git add ..." you use
 # "config add ..."
 alias dotfile='/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
-dotfile dotfile status.showUntrackedFiles no
+dotfile config status.showUntrackedFiles no
