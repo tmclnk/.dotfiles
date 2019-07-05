@@ -1,0 +1,5 @@
+[user]
+	email = tom.mclaughlin@objectpartners.com
+	name = Tom McLaughlin
+[push]
+	default = upstream
