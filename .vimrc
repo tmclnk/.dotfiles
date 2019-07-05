@@ -17,6 +17,8 @@ set nowrap
 set ignorecase
 set smartcase
 
+syntax on
+
 " avantas
 autocmd BufRead,BufNewFile *.inc set filetype=xml
 autocmd BufRead,BufNewFile *.item set filetype=xml
