@@ -12,7 +12,6 @@ let g:ctrlp_working_path_mode = 0
 let g:ctrlp_max_files = 0
 
 set cursorline
-set nu
 set nowrap
 set ignorecase
 set smartcase
@@ -23,3 +22,11 @@ autocmd BufRead,BufNewFile *.item set filetype=xml
 autocmd BufRead,BufNewFile *.dbml set filetype=xml
 autocmd BufRead,BufNewFile *.nest set filetype=xml
 autocmd BufRead,BufNewFile *.form set filetype=xml
+
+set statusline=%{expand('%:~:.')}         " Relative path to the file
+set statusline+=%=        " Switch to the right side
+set statusline+=%l        " Current line
+set statusline+=/         " Separator
+set statusline+=%L        " Total lines
+
+set laststatus=2	" always show status line
