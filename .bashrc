@@ -10,7 +10,6 @@ fi
 
 # use the `dotfile` alias for managing config
 alias dotfile='/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
-dotfile config status.showUntrackedFiles no
 
 # User specific aliases and functions
 set -o vi

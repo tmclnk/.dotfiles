@@ -4,6 +4,7 @@
 if [ -f ~/.bashrc ]; then
 	. ~/.bashrc
 fi
+dotfile config status.showUntrackedFiles no
 
 # User specific environment and startup programs
 
