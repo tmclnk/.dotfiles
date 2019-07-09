@@ -31,3 +31,9 @@ autocmd BufRead,BufNewFile *.item set filetype=xml
 autocmd BufRead,BufNewFile *.dbml set filetype=xml
 autocmd BufRead,BufNewFile *.nest set filetype=xml
 autocmd BufRead,BufNewFile *.form set filetype=xml
+
+" set statusline+=%F
+set statusline=%F%m%r%h%w\ 
+set statusline+=%{fugitive#statusline()}\    
+set statusline+=[%{strlen(&fenc)?&fenc:&enc}]
+set statusline+=\ [line\ %l\/%L]
