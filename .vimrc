@@ -19,6 +19,9 @@ set smartcase
 
 syntax on
 
+" mac os clipboard access without using "* or "+
+set clipboard=unnamed
+
 if has('gui_running')
 	colorscheme zenburn
 	set guifont=Monaco:h14
