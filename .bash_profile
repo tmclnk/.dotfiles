@@ -1,9 +1,14 @@
 # .bash_profile
 
-if [ -d $HOME/.jenv/bin ]; then
-	export PATH="$HOME/.jenv/bin:$PATH"
+# jenv, for setting java environments
+if [ -x "$(command -v jenv)" ]; then
+	# installed via homebrew
 	eval "$(jenv init -)"
-fi
+elif [ -d $HOME/.jenv/bin ]; then
+	# installed manually in home dir 
+ 	export PATH="$HOME/.jenv/bin:$PATH"
+ 	eval "$(jenv init -)"
+ fi
 
 
 # Get the aliases and functions
