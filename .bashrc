@@ -20,19 +20,37 @@ set -o vi
 ################################################################################
 
 # Generates a graphviz DOT file indicating all page references in the given directory.
-# use the output from this to generate a visual graph, e.g.
-#   accountAdmin > /tmp/accountAdmin.dot
-#   fdp -T svg -O /tmp/accountAdmin.dot
+# this needs to be run from the base path that the folders use
 grepit() {
-	file=`basename $1`
-	>&2 echo $1
-	if [[ $file == *dbml ]]; then
-		echo \"$file\" '[shape=rectangle, style=filled, bgcolor="#ff0000"];'
+	>&2 echo $1...
+	if [[ $1 == *dbml ]]; then
+		echo \"$1\" '[shape=rectangle, style=filled, color="#cccccc"];'
 	else
-		echo \"$file\" '[shape=oval];'
+		echo \"$1\" '[shape=oval,style=filled, color="#eeeeee"];'
 	fi	
-        fgrep -o -R -I "$file" --exclude="$1" --exclude='*.dot' --exclude='*.svg' --exclude='USAGE' . 2>/dev/null | awk -v file="$file" 'BEGIN { FS = ":" };  { sub(".*/", "", $1); printf("\"%s\"->\"%s\"\n",$1,file) }'
-        # fgrep -o -R -I "$file" --exclude="$1" --exclude='*.dot' --exclude='*.svg' --exclude='USAGE' . 2>/dev/null | awk -v file="$file" 'BEGIN { FS = ":" };  { printf("\"%s\"->\"%s\"\n",$1,file) }'
+        # fgrep -o -R -I "$file" --exclude="$1" --exclude='*.dot' --exclude='*.svg' --exclude='USAGE' . 2>/dev/null | awk -v file="$file" 'BEGIN { FS = ":" };  { sub(".*/", "", $1); printf("\"%s\"->\"%s\"\n",$1,file) }'
+        # fgrep -o -R -I "$1" --exclude="$1" --exclude='*.dot' --exclude='*.svg' --exclude='USAGE' . 2>/dev/null \
+	#	| awk -v file="$1" 'BEGIN { FS = ":" };  { sub("./", "", $1); printf("\"%s\"->\"%s\"\n",$1,file) }'
+
+	# 	grep -o -R -I "[^\">=]\+$1" --exclude='*.dot' --exclude='*.svg' --exclude='USAGE' . 2>/dev/null \
+
+	# when not an exact match, $2 is the thing being referenced
+	grep -o -R -I "[^=>\" ]\+`basename $1`" --exclude='*.dot' --exclude='*.svg' --exclude='USAGE' . 2>/dev/null \
+		| awk -v file="`basename $1`" -v path="$1" -F ":" \
+		'{ printf("# %s\n", $0); sub("./", "", $1); fileref=$2; sub(/.*\//,"",fileref); } 
+		{ 
+		if( $2 == path || $2 == "/"path ) {
+			# full, regular match 
+			printf("\t\"%s\" [shape=egg,color=red]\n", $1);
+			printf("\t\"%s\"->\"%s\"\n", $1, path);
+		} else if ( file == fileref ) {	
+			# refer to the same filename but possibly in a different directory
+			printf("\t\"%s\" [shape=oval,fontcolor=\"#b0c4de\",color=\"#add8e6\"]\n", $1);
+			printf("\t\"%s\"->\"%s\" [style=dashed,color=\"#add8e6\",label=\"%s\",fontcolor=\"#b0c4de\"]\n", $1, path, $2);
+		} else {
+			printf("# CLOSE MATCH \"%s\"->\"%s\"\n", $1, path, $2);
+		}
+		}'
 }
 export -f grepit 
 
@@ -54,6 +72,7 @@ makelist () {
 
 makedot() {
 	echo "digraph {"
+	echo "graph [overlap=false outputorder=edgesfirst];"
 	for file in $@; do 
 		if [ -z "$file" ]; then
 			dir=.
