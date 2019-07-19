@@ -46,7 +46,17 @@ grepit() {
 			sub(/.*\//,"",fileref);
 
 			if( $2 == path || $2 == "/"path ) {
-				printf("\t\"%s\"->\"%s\"\n", $1, path);
+				# an outside file that points in at a good match of the
+				# file we are searching for
+				if( ! match($1, dirname ".*") ){
+					# this will sometimes be a false positive, as the dirname for
+					# subdirectories ("a/b.*") will not match top-level
+					# elts ("a/myfile.txt"), so they will look like outside files
+					printf("\t\"%s\" [color=red, fontcolor=red, fillcolor=white] # dirname=%s\n", $1, dirname);
+					printf("\t\"%s\"->\"%s\" [color=red]\n", $1, path);
+				} else {
+					printf("\t\"%s\"->\"%s\" [color=black]\n", $1, path);
+				}
 			} else if ( file == fileref ) {	
 				# refer to the same filename but possibly in a different directory
 				printf("\t\"%s\"->\"%s\" [style=dashed,color=\"#add8e6\",label=\"%s\",fontcolor=\"#b0c4de\"]\n", $1, path, $2);
@@ -66,8 +76,10 @@ makelist () {
 		fi
 
 		if [ -d "$file" ]; then
-			find "$file" -type f \( ! -name '.*' \) -exec bash -c 'printnodes "$0"'  {} \;
+			# print all the edges and some of the nodes
 			find "$file" -type f \( ! -name '.*' \) -exec bash -c 'grepit "$0"'  {} \;
+			# then overwrite the nodes with definitive styling for the core directory
+			find "$file" -type f \( ! -name '.*' \) -exec bash -c 'printnodes "$0"'  {} \;
 		else 
 			grepit $file
 		fi
@@ -84,8 +96,8 @@ makedot() {
 		else
 			dir=$file
 		fi
-
-		makelist $dir | sort | uniq
+		# remove any duplicate lines
+		makelist $dir | awk '!seen[$0]++'
 	done
 	echo "}"
 }
