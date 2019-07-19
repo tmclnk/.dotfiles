@@ -22,9 +22,10 @@ set -o vi
 # Generates a graphviz DOT file indicating all page references in the given directory.
 # this needs to be run from the base path that the folders use
 printnodes(){
+	baseurl="http://local-meridian.smart-square.com"
 	>&2 echo printnode $1...
 	if [[ $1 == *dbml ]]; then
-		echo \"$1\" '[shape=rectangle, style=filled, fillcolor="#cccccc", fontcolor=black, color=gray13];'
+		echo \"$1\" '[shape=rectangle, style=filled, fillcolor="#cccccc", fontcolor=black, color=gray13, href="'$baseurl'"];'
 	else
 		echo \"$1\" '[shape=oval, style=filled, fillcolor="#eeeeee", fontcolor=black, color=gray21];'
 	fi	
