@@ -25,9 +25,9 @@ printnodes(){
 	baseurl="http://local-meridian.smart-square.com"
 	>&2 echo printnode $1...
 	if [[ $1 == *dbml ]]; then
-		echo \"$1\" '[shape=rectangle, style=filled, fillcolor="#cccccc", fontcolor=black, color=gray13, href="'$baseurl'"];'
+		echo \"$1\" '[shape=rectangle, style=filled, fillcolor="#999999", fontcolor=black, color=darkslategray, href="'$baseurl'"];'
 	else
-		echo \"$1\" '[shape=oval, style=filled, fillcolor="#eeeeee", fontcolor=black, color=gray21];'
+		echo \"$1\" '[shape=oval, style=filled, fillcolor="#eeeeee", fontcolor=black, color="#999999"];'
 	fi	
 }
 export -f printnodes
@@ -89,7 +89,7 @@ makelist () {
 makedot() {
 	echo "digraph {"
 	echo "graph [overlap=false outputorder=edgesfirst];"
-	echo "node [fontcolor=gray74,color=gray83];"
+	echo "node [fontcolor=slategray,color=slategray];"
 	for file in $@; do 
 		if [ -z "$file" ]; then
 			dir=.
