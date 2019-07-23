@@ -29,8 +29,14 @@ autocmd BufRead,BufNewFile *.form set filetype=xml
 
 " show the filename and truncated commit history for every dbml file in the
 " given directory (somedir)
-function ShowHist(somedir)
-	execute "read !" . "find " . a:somedir . " -name '*dbml' -exec git log -1 --pretty='format:\\%<(-100) \{\} \\%<(-20) \\%ad \\%ae \\%B' \{\} \\;"
+function! ShowHist(somedir)
+"	execute "read !" . "find " . a:somedir . " -name '*dbml' -exec git log -1 --pretty='format:\\%<(-100) \{\} \\%<(-20) \\%ad \\%ae \\%B' \{\} \\;"
+	"let doit = "read !" . "find " . a:somedir . " -name '*dbml' -exec echo \{\} \\;"
+	let doit = "read !" . "find " . a:somedir . " -name '*dbml'"
+	\ ." -exec bash -c 'grep -q DBIFADMINIP $0 \&\& printf DBIFADMINIP || printf \"\\%11s\" \" \" ' \{\} \\;"
+	\ ." -exec bash -c 'grep -q DBNOTCAPPAGETOSS $0 \&\& printf DBNOTCAPPAGETOSS || printf \"\\%16s\" \" \" ' \{\} \\;"
+	\ ." -exec git --no-pager log -1 --pretty='format:\\%<(-100) \{\} \\%<(-20) \\%ad \\%ae \\%B' \{\} \\;"
+	execute doit
 endfunction
 
 set statusline=%{expand('%:~:.')}         " Relative path to the file
