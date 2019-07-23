@@ -25,7 +25,7 @@ printnodes(){
 	baseurl="http://local-meridian.smart-square.com"
 	>&2 echo printnode $1...
 	if [[ $1 == *dbml ]]; then
-		echo \"$1\" '[shape=rectangle, style=filled, fillcolor="#999999", fontcolor=black, color=darkslategray, href="'$baseurl'"];'
+		echo \"$1\" '[shape=rectangle, style=filled, fillcolor="#999999", fontcolor=black, color=darkslategray, href="'$baseurl/$1'"];'
 	else
 		echo \"$1\" '[shape=oval, style=filled, fillcolor="#eeeeee", fontcolor=black, color="#999999"];'
 	fi	
@@ -81,6 +81,7 @@ makelist () {
 			# then overwrite the nodes with definitive styling for the core directory
 			find "$file" -type f \( ! -name '.*' \) -exec bash -c 'printnodes "$0"'  {} \;
 		else 
+			printnodes $file
 			grepit $file
 		fi
 	done
@@ -96,8 +97,14 @@ makedot() {
 		else
 			dir=$file
 		fi
-		# remove any duplicate lines
-		makelist $dir | awk '!seen[$0]++'
+
+		if [ -e "$dir" ]; then
+			# remove any duplicate lines
+			makelist $dir | awk '!seen[$0]++'
+		else 
+			>&2 echo "$dir not found"
+			exit 1
+		fi
 	done
 	echo "}"
 }
