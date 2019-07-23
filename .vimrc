@@ -16,12 +16,22 @@ set nowrap
 set ignorecase
 set smartcase
 
+" allow us to switch buffers with unsaved changes
+set hidden
+set confirm
+
 " avantas
 autocmd BufRead,BufNewFile *.inc set filetype=xml
 autocmd BufRead,BufNewFile *.item set filetype=xml
 autocmd BufRead,BufNewFile *.dbml set filetype=xml
 autocmd BufRead,BufNewFile *.nest set filetype=xml
 autocmd BufRead,BufNewFile *.form set filetype=xml
+
+" show the filename and truncated commit history for every dbml file in the
+" given directory (somedir)
+function ShowHist(somedir)
+	execute "read !" . "find " . a:somedir . " -name '*dbml' -exec git log -1 --pretty='format:\\%<(-100) \{\} \\%<(-20) \\%ad \\%ae \\%B' \{\} \\;"
+endfunction
 
 set statusline=%{expand('%:~:.')}         " Relative path to the file
 set statusline+=%=        " Switch to the right side
