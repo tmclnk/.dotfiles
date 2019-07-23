@@ -26,3 +26,16 @@ export BASH_COMPLETION_COMPAT_DIR="/usr/local/etc/bash_completion.d"
 # bash completion (from homebrew)
 [[ -r "/usr/local/etc/profile.d/bash_completion.sh" ]] && . "/usr/local/etc/profile.d/bash_completion.sh"
 set -o vi
+
+# if the graphviz package is installed, use this to make (and display) a graph
+# of page references as an svg
+if [ -x "$(command -v fdp)" ]; then
+	showfdp (){
+		filename=${1//\//.}.dot
+		basedir=/opt/user-dbml/prod-dbml/pc/docs/WWW/www/0/C/agent
+		>&2 echo "making graphviz dotfile from $basedir for $1..."
+		ssh local-a-www "cd $basedir && makedot $1" > $filename \
+			&& fdp -T svg -O $filename \
+			&& open -a chromium $filename.svg
+	}
+fi
