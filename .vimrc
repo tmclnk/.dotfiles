@@ -35,8 +35,10 @@ function! ShowHist(somedir)
 	let doit = "read !" . "find " . a:somedir . " -name '*dbml'"
 	\ ." -exec bash -c 'grep -q DBIFADMINIP $0 \&\& printf DBIFADMINIP || printf \"\\%11s\" \" \" ' \{\} \\;"
 	\ ." -exec bash -c 'grep -q DBNOTCAPPAGETOSS $0 \&\& printf DBNOTCAPPAGETOSS || printf \"\\%16s\" \" \" ' \{\} \\;"
+	\ ." -exec bash -c 'grep -q _ADMIN_REQUIRED $0 \&\& printf XXXX_ADMIN_REQUIRED || printf \"\\%19s\" \" \" ' \{\} \\;"
 	\ ." -exec bash -c 'grep -q \"DBNOTCAP \" $0 \&\& printf DBNOTCAP || printf \"\\%08s\" \" \" ' \{\} \\;"
-	\ ." -exec git --no-pager log -1 --pretty='format:\\%<(-100) \{\} \\%<(-20) \\%ad \\%ae \\%B' \{\} \\;"
+	\ ." -exec bash -c 'git diff-index --quiet HEAD $0 \&\& printf \" \" || printf \"*\" ' \{\} \\;"
+	\ ." -exec git --no-pager log -1 --pretty='format:\\%<(-100) \{\} \\%<(-20) \\%ai \\%ae \\%s \\%n' \{\} \\;"
 	execute doit
 endfunction
 
