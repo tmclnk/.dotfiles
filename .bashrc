@@ -14,6 +14,23 @@ alias dotfile='/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
 # User specific aliases and functions
 set -o vi
 
+# git log helper
+githist(){
+	for file in "$@"; do 
+		if [ -f "$file" ]; then
+			printf "%-40s" "$file"
+			# because of the symlinks, some files may appear untracked to git
+			# so use git ls-files to see if they are tracked
+			git ls-files --error-unmatch "$file" >/dev/null 2>&1 \
+				|| >&2 echo " untracked" \
+				&& git --no-pager log -1 --date=short --format=" %ad %<(25,trunc)%cE >>%s<<" "$file"
+		elif [ -d "$file" ]; then
+			>&2 echo "directory $file/ ignored"
+		else
+			>&2 echo "$file not found"
+		fi
+	done
+}
 
 ################################################################################
 # GraphViz Functions
@@ -35,7 +52,8 @@ grepit() {
 	>&2 echo $1...
 
 	# when not an exact match, $2 is the thing being referenced
-	grep -o -R -I "[^=>'\" ]\+`basename $1`" --exclude='*.dot' --exclude='*.svg' --exclude='USAGE' . 2>/dev/null \
+	# grep -o -R -I "[^=>'\" ]\+`basename $1`" --exclude='*.dot' --exclude='*.svg' --exclude='USAGE' . 2>/dev/null \
+	grep -o -R -I "[^=>'\" ]*`basename $1`" --exclude='*.dot' --exclude='*.svg' --exclude='USAGE' . 2>/dev/null \
 		| awk -v file="`basename $1`" -v path="$1" -v dirname="`dirname $1`" -F ":" \
 		'
 		{ 
