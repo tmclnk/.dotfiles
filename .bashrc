@@ -14,6 +14,37 @@ alias dotfile='/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
 # User specific aliases and functions
 set -o vi
 
+# show the changes in two branches on a file-bny-file basis,
+# <M|D> <path> <short-hash> <commit subject>
+git-diff-branch(){
+	comparebranch="origin/develop"
+	case "$#" in
+	0)
+		branch1=`git branch | grep \* | cut -d ' ' -f2`
+		branch2=$comparebranch
+		;;
+	1)
+		branch1=$1
+		branch2=$comparebranch
+		;;
+	2)
+		branch1=$1
+		branch2=$2
+		;;
+	*)
+		>&2 echo "git-diff-branch [branch1] [branch2]"
+		>&2 echo "  If no branches are specified, the current branch will be compared against $comparebranch"
+		>&2 echo "  If exactly one branch is specified, the current branch will be compared against $comparebranch"
+		return 1;
+	esac
+	>&2 echo "git-diff-branch $branch1 $branch2..."
+	git diff "$branch1" "$branch2" --name-status \
+		| awk ' { printf("%s\t%s\t",$1,$2); }
+			/^M/ { system("git --no-pager log -1 --format=\"%h\t%s\" " $2); }
+			! /^M/ {  cmd=sprintf("git --no-pager log -1 $(git rev-list -n 1 HEAD -- %s) --format=\"%%h\t%%s\"", $2); system(cmd); }' \
+		| column -t -s $'\t'
+}
+
 # git log helper
 githist(){
 	for file in "$@"; do 
