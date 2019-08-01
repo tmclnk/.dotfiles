@@ -17,15 +17,16 @@ set -o vi
 # show the changes in two branches on a file-bny-file basis,
 # <M|D> <path> <short-hash> <commit subject>
 git-diff-branch(){
+	gitroot=`git rev-parse --show-toplevel`	
 	comparebranch="origin/develop"
 	case "$#" in
 	0)
-		branch1=`git branch | grep \* | cut -d ' ' -f2`
-		branch2=$comparebranch
+		branch1=$comparebranch
+		branch2=`git branch | grep \* | cut -d ' ' -f2`
 		;;
 	1)
-		branch1=$1
-		branch2=$comparebranch
+		branch1=$comparebranch
+		branch2=$1
 		;;
 	2)
 		branch1=$1
@@ -38,11 +39,12 @@ git-diff-branch(){
 		return 1;
 	esac
 	>&2 echo "git-diff-branch $branch1 $branch2..."
-	git diff "$branch1" "$branch2" --name-status \
+	>&2 echo "starting in $gitroot..."
+	( cd "$gitroot" && git diff "$branch1" "$branch2" --name-status \
 		| awk ' { printf("%s\t%s\t",$1,$2); }
 			/^M/ { system("git --no-pager log -1 --format=\"%h\t%s\" " $2); }
 			! /^M/ {  cmd=sprintf("git --no-pager log -1 $(git rev-list -n 1 HEAD -- %s) --format=\"%%h\t%%s\"", $2); system(cmd); }' \
-		| column -t -s $'\t'
+		| column -t -s $'\t' )
 }
 
 # git log helper
