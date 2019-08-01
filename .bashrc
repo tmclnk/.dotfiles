@@ -46,7 +46,7 @@ git-diff-branch(){
 }
 
 # git log helper
-githist(){
+git-hist(){
 	for file in "$@"; do 
 		if [ -f "$file" ]; then
 			printf "%-40s" "$file"
