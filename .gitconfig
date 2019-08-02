@@ -3,3 +3,5 @@
 	name = Tom McLaughlin
 [push]
 	default = upstream
+[diff]
+	tool = vimdiff
