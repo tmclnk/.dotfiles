@@ -54,9 +54,11 @@ git-hist(){
 			printf "%-40s" "$file"
 			# because of the symlinks, some files may appear untracked to git
 			# so use git ls-files to see if they are tracked
-			git ls-files --error-unmatch "$file" >/dev/null 2>&1 \
-				|| >&2 echo " untracked" \
-				&& git --no-pager log -1 --date=short --format=" %ad %<(25,trunc)%cE >>%s<<" "$file"
+			if git ls-files --error-unmatch "$file" >/dev/null 2>&1; then 
+				git --no-pager log -1 --date=short --format=" %ad %<(25,trunc)%cE >>%s<<" "$file"
+			else
+				>&2 echo " untracked"
+			fi
 		elif [ -d "$file" ]; then
 			>&2 echo "directory $file/ ignored"
 		else
@@ -138,6 +140,7 @@ makelist () {
 	done
 }
 
+
 makedot() {
 	echo "digraph {"
 	echo "graph [overlap=false outputorder=edgesfirst];"
@@ -160,6 +163,13 @@ makedot() {
 	echo "}"
 }
 
+# when you're working from a base directory like user or agent, this
+# needs we need to treat the paths differently :-(
+makedotroot(){
+	dir="$1"
+	[ -z "$dir" ] && dir="."
+	makedot $(find  "$dir" -maxdepth 1 -mindepth 1 -type f -not -path '*/\.*' | sed 's/^\.\///' )
+}
 ################################################################################
 # End GraphViz Functions
 ################################################################################
