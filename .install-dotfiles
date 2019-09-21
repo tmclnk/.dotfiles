@@ -14,7 +14,7 @@ cp -a  "$HOME/dotfiles-tmp/." "$HOME"
 # remove the temp dir
 rm -rf "$HOME/dotfiles-tmp"
 
-dotfile() {
+dotfile {
    /usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME $@
 }
 echo ".dotfiles" >> .gitignore
