@@ -8,8 +8,10 @@ fi
 # Uncomment the following line if you don't like systemctl's auto-paging feature:
 # export SYSTEMD_PAGER=
 
-# use the `dotfile` alias for managing config
-alias dotfile='/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
+# use the `dotfile` functionfor managing config
+dotfile() {
+   /usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME $@
+}
 
 # User specific aliases and functions
 set -o vi

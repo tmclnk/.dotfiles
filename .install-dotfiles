@@ -1,6 +1,22 @@
-# source me
-alias dotfile='/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
+dotfilerepo="https://github.com/tmcoma/.dotfiles"
+
+if [[ -d "$HOME/.dotfiles" ]]; then
+	>&2 "$HOME/.dotfiles already exists!"
+	return
+fi
+
+# initially, put the working tree into $HOME/dotfiles-tmp
+# and the bare repo into $HOME/.dotfiles
+# then copy all the files back from there
+git clone --separate-git-dir="$HOME/.dotfiles" "$dotfilerepo" "$HOME/dotfiles-tmp"
+cp -a  "$HOME/dotfiles-tmp/." "$HOME"
+
+# remove the temp dir
+rm -rf "$HOME/dotfiles-tmp"
+
+dotfile() {
+   /usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME $@
+}
 echo ".dotfiles" >> .gitignore
-git clone --bare https://github.com/tmcoma/.dotfiles $HOME/.dotfiles
 dotfile checkout
 dotfile config --local status.showUntrackedFiles no
