@@ -10,8 +10,13 @@ fi
 
 # use the `dotfile` functionfor managing config
 dotfile() {
-   /usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME $@
+	/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME $@
 }
+
+# some repos are shipping with nano these days
+if ! [ -x "$(command -v vim)" ]; then
+	export EDITOR="vim"
+fi
 
 # User specific aliases and functions
 set -o vi
