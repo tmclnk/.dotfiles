@@ -1,6 +1,6 @@
 # source me
 alias dotfile='/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
-echo ".dotfiles.git" >> .gitignore
+echo ".dotfiles" >> .gitignore
 git clone --bare https://github.com/tmcoma/.dotfiles $HOME/.dotfiles
 dotfile checkout
 dotfile config --local status.showUntrackedFiles no
