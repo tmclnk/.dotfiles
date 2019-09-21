@@ -8,7 +8,7 @@ elif [ -d $HOME/.jenv/bin ]; then
 	# installed manually in home dir 
  	export PATH="$HOME/.jenv/bin:$PATH"
  	eval "$(jenv init -)"
- fi
+fi
 
 
 # Get the aliases and functions
@@ -18,5 +18,6 @@ fi
 
 # User specific environment and startup programs
 PATH=$PATH:$HOME/.local/bin:$HOME/bin
+PATH="$PATH":/Users/tom/Library/Python/3.7/bin 
 
 export PATH
