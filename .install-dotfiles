@@ -10,11 +10,12 @@ fi
 # then copy all the files back from there
 git clone --separate-git-dir="$HOME/.dotfiles" "$dotfilerepo" "$HOME/dotfiles-tmp"
 cp -a  "$HOME/dotfiles-tmp/." "$HOME"
+chmod 700 $HOME
 
 # remove the temp dir
 rm -rf "$HOME/dotfiles-tmp"
 
-dotfile {
+dotfile () {
    /usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME $@
 }
 echo ".dotfiles" >> .gitignore
