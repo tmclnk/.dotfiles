@@ -185,7 +185,7 @@ jqnl(){
 	jq . | sed 's/\\n/\n/g; s/\\t/\t/g'
 }
 
-i# prints a summary of an extracted zip file from S3
+# prints a summary of an extracted zip file from S3
 summary(){
     total_rows=$(wc -l execution*csv | awk '{print $1}')
     let 'total_rows = total_rows -1'
