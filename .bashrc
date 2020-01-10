@@ -29,17 +29,37 @@ export BASH_COMPLETION_COMPAT_DIR="/usr/local/etc/bash_completion.d"
 # 	export PS1='\n\[\033[32m\]\u@\h\[\033[00m\]:\[\033[34m\]\w\[\033[31m\]$(__git_ps1)\[\033[00m\]\n\$ '
 # fi
 
+# tab complete on ssh
+
+_complete_ssh_hosts ()
+{
+        COMPREPLY=()
+        cur="${COMP_WORDS[COMP_CWORD]}"
+        comp_ssh_hosts=`cat ~/.ssh/known_hosts | \
+                        cut -f 1 -d ' ' | \
+                        sed -e s/,.*//g | \
+                        grep -v ^# | \
+                        uniq | \
+                        grep -v "\[" ;
+                cat ~/.ssh/config | \
+                        grep "^Host " | \
+                        awk '{print $2}'
+                `
+        COMPREPLY=( $(compgen -W "${comp_ssh_hosts}" -- $cur))
+        return 0
+}
+complete -F _complete_ssh_hosts ssh
+
 if [ -d "$(brew --prefix)/etc/bash_completion.d" ]; then
-	source "$(brew --prefix)/etc/bash_completion.d/git-completion.bash"
-	source "$(brew --prefix)/etc/bash_completion.d/git-prompt.sh"
+    source "$(brew --prefix)/etc/bash_completion.d/git-completion.bash"
+    source "$(brew --prefix)/etc/bash_completion.d/git-prompt.sh"
 	
-GIT_PS1_SHOWDIRTYSTATE=true
+    GIT_PS1_SHOWDIRTYSTATE=true
 	export PS1='\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\[\033[31m\]$(__git_ps1)\[\033[00m\]\$ '
 
 fi
 
 set -o vi
-
 
 # set the shell to use an escape sequence to set
 # the page title
@@ -122,3 +142,53 @@ git-hist(){
 	done
 }
 
+killredis() {
+    local pid=$(ps aux | grep redis | grep -v grep | awk '{print $2}')
+    if [ ! -z "$pid" ]; then
+        kill -9 "$pid"
+    else
+        >&2 echo "redis process not found"
+        return 1
+    fi
+}
+
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+
+reset_title() { 
+    printf '\e]0;\a;'
+}
+
+0c() {
+    cd /Volumes/avantas/env/prod-dbml/pc/docs/www/0/C;
+}
+
+
+# prints a summary of a ssm jobcode zip file...
+summary(){
+    total_rows=$(wc -l execution*csv | awk '{print $1}')
+    let 'total_rows = total_rows -1'
+
+    workday_errors="$(find . -name '*error.json*' -exec jq 'select(.source=="workday") | .accountId' {} + | wc -l | tr -d '[:space:]')"
+    workday_successes=`find . -name '*Response.xml*' | wc -l | awk '{print $1}'`
+
+    ssapi_errors=`find . -name '*error.json' -exec jq 'select(.source=="ss-api") | .accountId' {} + | wc -l | tr -d '[:space:]'`
+    ssapi_successes=`find . -name '*ssapi-response.json*' | wc -l | awk '{print $1}'`
+    if [ -f errors.json ]; then
+        process_errors=`jq '. | length' errors*.json`
+    else
+        process_errors=0
+    fi
+
+    printf '%-20s %8s %8s\n' "" "Success" "Error"
+    printf '%-20s %8s %8s\n' "Workday" "$workday_successes" "$workday_errors"
+    printf '%-20s %8s %8s\n' "SS-API" "$ssapi_successes" "$ssapi_errors"
+    printf '%-20s %8s %8s\n' "Process" "n/a" "$process_errors"
+
+    echo '-----'
+    printf '%-20s %8s\n' "Incoming Rows" "$total_rows"
+    let "processed_rows = $workday_errors + $ssapi_errors + $ssapi_successes + $process_errors"
+    printf '%-20s %8s\n' "Processed Rows" "$processed_rows"
+
+}
